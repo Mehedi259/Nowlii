@@ -1,0 +1,54 @@
+from django.db import models
+
+# ------------------------------------------------------------------------------
+# QUESTS
+# ------------------------------------------------------------------------------
+class Quests(models.Model):
+    ZONE_CHOICES= [
+        ('Soft steps', 'Soft steps'),
+        ('Elevated', 'Elevated'),
+        ('Power move', 'Power move'),
+        ('Stretch zone', 'Stretch zone'),
+    ]
+
+    DUE_DATE= [
+        ('Today', 'Today'),
+        ('Tomorrow', 'Tomorrow'),
+    ]
+
+    task = models.CharField(max_length=200, blank=True, null=True)
+    zone = models.CharField(max_length=100, choices=ZONE_CHOICES, blank=True, null=True)
+    due_date = models.CharField(max_length=50, choices=DUE_DATE, blank=True, null=True)
+    select_a_date = models.DateField(blank=True, null=True)
+    due_time = models.TimeField(blank=False, null=True)
+    enable_call = models.BooleanField(default=False)
+    repeat_quest = models.BooleanField(default=False)
+    set_alarm = models.BooleanField(default=False)
+    task_done = models.BooleanField(default=False)
+
+
+    def save(self, *args, **kwargs):
+        if self.select_a_date:
+            self.due_date = self.select_a_date
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.task
+    
+    class Meta:
+        verbose_name_plural = 'Quests'
+
+
+# ------------------------------------------------------------------------------
+# SUBTASKS
+# ------------------------------------------------------------------------------
+class SubTasks(models.Model):
+    task = models.ForeignKey(Quests, related_name='subtasks', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, blank=True, null=True)
+    is_complete = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name_plural = 'subtasks'

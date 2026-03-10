@@ -58,6 +58,16 @@ class VerifyOTPSerializer(serializers.Serializer):
 
 
 # ------------------------------------------------------------------------------
+# RESEND REGISTRATION OTP
+# ------------------------------------------------------------------------------
+class ResendOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        required=True,
+        help_text="Email address used during registration"
+    )
+
+
+# ------------------------------------------------------------------------------
 # LOGIN
 # ------------------------------------------------------------------------------
 class LoginSerializer(serializers.Serializer):

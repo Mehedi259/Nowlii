@@ -38,6 +38,7 @@ from .serializers import (
     ResetPasswordSerializer,
     SetNewPasswordSerializer,
     ProfileSerializer,
+    ResendOTPSerializer,
 )
 
 
@@ -207,6 +208,69 @@ class VerifyOTPView(APIView):
         pending.delete()
 
         return Response({"message": "Registration complete. You can now log in."}, status=status.HTTP_200_OK)
+
+
+# ------------------------------------------------------------------------------
+# RESEND REGISTRATION OTP
+# ------------------------------------------------------------------------------
+class ResendOTPView(APIView):
+    permission_classes = [AllowAny]
+    
+    @swagger_auto_schema(
+        operation_summary="Resend Registration OTP",
+        operation_description="Resend OTP to email if the previous one was missed or expired. A new 6-digit OTP will be generated and sent to the provided email.",
+        tags=['Authentication'],
+        request_body=ResendOTPSerializer,
+        responses={
+            200: openapi.Response(
+                description="OTP resent successfully",
+                examples={
+                    "application/json": {
+                        "message": "OTP has been resent to your email."
+                    }
+                }
+            ),
+            404: openapi.Response(
+                description="Pending registration not found",
+                examples={
+                    "application/json": {
+                        "error": "No pending registration found for this email."
+                    }
+                }
+            ),
+            400: openapi.Response(
+                description="Bad Request",
+                examples={
+                    "application/json": {
+                        "email": ["This field is required."]
+                    }
+                }
+            )
+        }
+    )
+    def post(self, request):
+        serializer = ResendOTPSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        email = serializer.validated_data["email"]
+        
+        pending_user = PendingUser.objects.filter(email=email).first()
+        if not pending_user:
+            return Response({"error": "No pending registration found for this email."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Generate new OTP
+        otp = pending_user.generate_otp()
+        
+        # Send email with new OTP
+        send_mail(
+            subject="Your Nowlii verification code (Resent)",
+            message=f"Your new OTP code is {otp}. It expires in 15 minutes.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+        )
+        
+        return Response({"message": "OTP has been resent to your email."}, status=status.HTTP_200_OK)
 
 
 # ------------------------------------------------------------------------------

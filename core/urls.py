@@ -23,23 +23,10 @@ def redirect_to_docs(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # apps urls
-    # path('api/', include('apps.leagues.urls')),
-    # path('api/', include('apps.teams.urls')),
-    # path('api/', include('apps.players.urls')),
-    # path('api/', include('apps.leaderboard.urls')),
-    # path('api/', include('apps.admin_panel.urls')),
-    # path('api/', include('apps.games.urls')),
     path('api/', include('Apps.users.urls')),
-    # path('api/', include('apps.matches.urls')),
-    # path('api/', include('apps.scoring.urls')),
+    path('api/', include('Apps.quests.urls')),
 
-    # allauth
     path('accounts/', include('allauth.urls')),
-
-    # path('api/djoser/', include('djoser.urls')),
-    # path('djoser/jwt/', include('djoser.urls.jwt')),
-
     
 
     # API Documentation
