@@ -8,7 +8,7 @@ from .models import Quests, SubTasks
 class QuestsSerializers(serializers.ModelSerializer):
     class Meta:
         model = Quests
-        fields = '__all__'
+        exclude = ['user']
 
 
 # ------------------------------------------------------------------------------

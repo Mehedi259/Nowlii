@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # ------------------------------------------------------------------------------
 # QUESTS
@@ -11,14 +14,10 @@ class Quests(models.Model):
         ('Stretch zone', 'Stretch zone'),
     ]
 
-    DUE_DATE= [
-        ('Today', 'Today'),
-        ('Tomorrow', 'Tomorrow'),
-    ]
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.CharField(max_length=200, blank=True, null=True)
     zone = models.CharField(max_length=100, choices=ZONE_CHOICES, blank=True, null=True)
-    due_date = models.CharField(max_length=50, choices=DUE_DATE, blank=True, null=True)
     select_a_date = models.DateField(blank=True, null=True)
     due_time = models.TimeField(blank=False, null=True)
     enable_call = models.BooleanField(default=False)
