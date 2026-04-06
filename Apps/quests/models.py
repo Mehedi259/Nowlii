@@ -27,8 +27,6 @@ class Quests(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if self.select_a_date:
-            self.due_date = self.select_a_date
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -43,11 +41,11 @@ class Quests(models.Model):
 # ------------------------------------------------------------------------------
 class SubTasks(models.Model):
     task = models.ForeignKey(Quests, related_name='subtasks', on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, blank=True, null=True)
-    is_complete = models.BooleanField(default=False)
+    title = models.CharField(max_length=50, blank=True, null=True)
+    task_done = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.title
     
     class Meta:
         verbose_name_plural = 'subtasks'
